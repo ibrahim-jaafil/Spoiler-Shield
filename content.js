@@ -1,7 +1,7 @@
 console.log("content script check")
 
 
-const blurwords = ["this season","found out","found","caught","episode","dead","dies","kills","gets killed","killed", "kill","shoots","stabs","kisses","marries","breaks up","divorces","wins","loses","betrays","reveals","confesses","confession","secret","surprise","twist","plot twist","ending","finale","death"]
+const blurwords = ["villain","this season","found out","found","caught","episode","dead","dies","kills","gets killed","killed", "kill","shoots","stabs","kisses","marries","breaks up","divorces","wins","loses","betrays","reveals","confesses","confession","secret","surprise","twist","plot twist","ending","finale","death"]
 
 function blurSpoilers(keywords) {   
    document.querySelectorAll('p, h1, h2, h3').forEach(p => {
@@ -19,26 +19,27 @@ function blurSpoilers(keywords) {
     })
 
 
-    document.querySelectorAll('span.font-chirp').forEach(tweet => {
-        const text = tweet.textContent.toLowerCase();
+    document.querySelectorAll('article').forEach(article => {
+        const tweetText = article.querySelector('[lang]');
+        if (!tweetText) return;
+
+        const text = tweetText.textContent.toLowerCase();
         const hasKeyword = keywords.some(word => text.includes(word.toLowerCase()));
         const hasBlurword = blurwords.some(word => text.includes(word.toLowerCase()));
 
-           if (hasKeyword) {
+        if (hasKeyword) {
             if(hasBlurword){
-             tweet.setAttribute('style', 'filter: blur(8px) !important');
-            console.log('tried');
+                tweetText.setAttribute('style', 'filter: blur(8px) !important');
+                console.log('blurred tweet');
+
+               article.querySelectorAll('img').forEach(img => {
+    if (img.src.includes('pbs.twimg.com/media')) {
+        img.setAttribute('style', 'filter: blur(8px) !important');
+        console.log('Blurred image');
     }
-           }
-            const article = tweet.closest('article');
-            if (article) {
-                article.querySelectorAll('img').forEach(img => {
-                    if (!img.src.includes('profile_images')) {
-                        img.setAttribute('style', 'filter: blur(8px) !important');
-                        console.log('Blurred image');
-                    }
-                });
+});
             }
+        }
 
 
     })
